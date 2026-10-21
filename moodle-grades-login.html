@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Мои оценки · Moodle</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --ink: #18263e;
+        --muted: #64748b;
+        --border: #e3e9f2;
+        --accent: #4f46e5;
+        --soft: #eef2ff;
+        --card: #fff;
+        --good: #087a59;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          15px/1.55 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      .wrapper {
+        max-width: 1040px;
+        margin: auto;
+        padding: 44px 20px 80px;
+      }
+      header {
+        margin-bottom: 28px;
+      }
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 750;
+        letter-spacing: 0.13em;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 51px);
+        letter-spacing: -0.045em;
+        line-height: 1.1;
+        margin: 8px 0 12px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 17px;
+        max-width: 650px;
+        margin: 0;
+      }
+      .panel,
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 10px 32px #233b6210;
+      }
+      .panel {
+        padding: 24px;
+        margin: 25px 0;
+      }
+      .formgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 17px;
+      }
+      label {
+        display: block;
+        font-weight: 650;
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
+      input {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--ink);
+        background: white;
+        outline: none;
+      }
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px #4f46e521;
+      }
+      .tokenrow {
+        margin-top: 17px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 20px;
+      }
+      button {
+        border: 0;
+        cursor: pointer;
+        border-radius: 11px;
+        padding: 12px 20px;
+        background: var(--accent);
+        color: #fff;
+        font: 700 14px system-ui;
+      }
+      button:hover:not(:disabled) {
+        background: #4338ca;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .status {
+        min-height: 28px;
+        margin: 8px 0;
+        color: var(--muted);
+      }
+      .status.error {
+        color: #b42318;
+      }
+      .topline {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 26px 0 15px;
+      }
+      h2 {
+        font-size: 23px;
+        margin: 0;
+        letter-spacing: -0.025em;
+      }
+      .student {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .pill {
+        background: var(--soft);
+        color: var(--accent);
+        padding: 5px 9px;
+        font-size: 11px;
+        font-weight: 750;
+        border-radius: 99px;
+      }
+      .course-title {
+        font-size: 19px;
+        font-weight: 750;
+        line-height: 1.3;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .grade {
+        margin-top: auto;
+        padding-top: 13px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .grade strong {
+        font-size: 24px;
+        letter-spacing: -0.03em;
+        color: var(--good);
+      }
+      .grade .missing {
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .course-link {
+        font-size: 13px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 650;
+      }
+      .course-link:hover {
+        text-decoration: underline;
+      }
+      .empty {
+        border: 1px dashed #bac7d8;
+        border-radius: 16px;
+        padding: 32px;
+        color: var(--muted);
+        text-align: center;
+      }
+      footer {
+        margin-top: 40px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (max-width: 650px) {
+        .wrapper {
+          padding-top: 28px;
+        }
+        .formgrid {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrapper">
+      <header>
+        <div class="eyebrow">Moodle · Web Services</div>
+        <h1>Мои оценки</h1>
+        <p class="lead">
+          Войдите под своей учётной записью Moodle, чтобы увидеть итоговые
+          оценки с названиями дисциплин вместо числовых идентификаторов.
+        </p>
+      </header>
+
+      <section class="panel" aria-label="Подключение к Moodle">
+        <form id="connectionForm">
+          <div class="formgrid">
+            <div>
+              <label for="baseUrl">Адрес вашего Moodle</label>
+              <input
+                id="baseUrl"
+                type="url"
+                value="https://node-server.ru/m/"
+                placeholder="https://example.moodlecloud.com"
+                required
+                spellcheck="false"
+              />
+            </div>
+            <div>
+              <label for="username">Логин студента</label>
+              <input
+                id="username"
+                type="text"
+                placeholder="studentlogin"
+                required
+                autocomplete="username"
+                spellcheck="false"
+              />
+            </div>
+            <div>
+              <label for="password">Пароль Moodle</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Пароль от учётной записи"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" id="loadBtn">Войти и получить оценки</button>
+            <span class="note"
+              >Данные отправляются напрямую на указанный Moodle по HTTPS. Пароль
+              и токен не сохраняются в хранилище браузера.</span
+            >
+          </div>
+        </form>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+      <section id="results" hidden aria-label="Оценки по курсам">
+        <div class="topline">
+          <h2>Результаты обучения</h2>
+          <span id="student" class="student"></span>
+        </div>
+        <div id="cards" class="cards"></div>
+      </section>
+      <footer>
+        Учебный проект · Moodle REST API · Без сторонних библиотек. Проверяйте
+        адрес страницы перед вводом пароля. Не размещайте пароли и токены в
+        публичном репозитории.
+      </footer>
+    </main>
+
+    <script>
+      "use strict";
+      const form = document.getElementById("connectionForm");
+      const button = document.getElementById("loadBtn");
+      const status = document.getElementById("status");
+      const results = document.getElementById("results");
+      const cards = document.getElementById("cards");
+      const student = document.getElementById("student");
+
+      function setStatus(message, error = false) {
+        status.textContent = message;
+        status.classList.toggle("error", error);
+      }
+
+      // Запросы идут непосредственно из браузера на Moodle. Сервер Moodle
+      // должен разрешать кросс-доменные запросы (CORS) с GitHub Pages.
+      async function moodleCall(base, token, method, params = {}) {
+        const body = new URLSearchParams({
+          wstoken: token,
+          wsfunction: method,
+          moodlewsrestformat: "json",
+          ...params,
+        });
+        const response = await fetch(base + "/webservice/rest/server.php", {
+          method: "POST",
+          body,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          cache: "no-store",
+          credentials: "omit",
+        });
+        if (!response.ok)
+          throw new Error(
+            `HTTP ${response.status}: сервер Moodle не ответил успешно`,
+          );
+        const data = await response.json();
+        if (data && (data.exception || data.errorcode)) {
+          throw new Error(
+            data.message || data.errorcode || "Ошибка Moodle API",
+          );
+        }
+        return data;
+      }
+
+      async function getToken(base, username, password) {
+        const form = new URLSearchParams({
+          username,
+          password,
+          service: "moodle_mobile_app",
+        });
+        const response = await fetch(base + "/login/token.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: form,
+          cache: "no-store",
+          credentials: "omit",
+        });
+        if (!response.ok)
+          throw new Error(`Ошибка авторизации: HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data.token)
+          throw new Error(
+            data.error ||
+              data.message ||
+              "Moodle не выдал токен. Проверьте логин, пароль и доступность Moodle Mobile Service.",
+          );
+        return data.token;
+      }
+
+      function createCard(item, name, base) {
+        const article = document.createElement("article");
+        article.className = "card";
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = "Курс";
+        head.appendChild(pill);
+
+        const title = document.createElement("h3");
+        title.className = "course-title";
+        title.textContent = name;
+
+        const gradeRow = document.createElement("div");
+        gradeRow.className = "grade";
+        const caption = document.createElement("span");
+        caption.textContent = "Итоговая оценка";
+        const grade = document.createElement("strong");
+
+        // Moodle возвращает форматированную оценку как grade (строка HTML
+        // в некоторых настройках): отображаем её как текст, без innerHTML.
+        const displayGrade = String(item.grade ?? "")
+          .replace(/<[^>]*>/g, "")
+          .trim();
+        const rawGrade = item.rawgrade;
+        const hasGrade =
+          rawGrade !== null && rawGrade !== undefined && rawGrade !== "";
+        grade.textContent =
+          displayGrade && displayGrade !== "-"
+            ? displayGrade
+            : hasGrade
+              ? String(rawGrade)
+              : "Нет оценки";
+        if (!hasGrade && (!displayGrade || displayGrade === "-"))
+          grade.className = "missing";
+
+        gradeRow.append(caption, grade);
+        const link = document.createElement("a");
+        link.className = "course-link";
+        link.href = `${base}/course/view.php?id=${encodeURIComponent(item.courseid)}`;
+        link.textContent = "Перейти к курсу ↗";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+
+        article.append(head, title, link, gradeRow);
+        return article;
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        results.hidden = true;
+        cards.replaceChildren();
+        const base = document
+          .getElementById("baseUrl")
+          .value.trim()
+          .replace(/\/+$/, "");
+        const username = document.getElementById("username").value.trim();
+        const passwordInput = document.getElementById("password");
+        const password = passwordInput.value;
+
+        if (!base.startsWith("https://")) {
+          setStatus("Используйте HTTPS-адрес Moodle.", true);
+          return;
+        }
+        button.disabled = true;
+        setStatus("Проверяем логин и пароль…");
+        let token;
+        try {
+          try {
+            token = await getToken(base, username, password);
+          } finally {
+            // Не оставляем пароль в форме даже при ошибке авторизации.
+            passwordInput.value = "";
+          }
+          setStatus("Вход выполнен. Загружаем курсы и оценки…");
+          const info = await moodleCall(
+            base,
+            token,
+            "core_webservice_get_site_info",
+          );
+          if (
+            !Number.isInteger(Number(info.userid)) ||
+            Number(info.userid) <= 0
+          ) {
+            throw new Error(
+              "Moodle не вернул идентификатор текущего пользователя.",
+            );
+          }
+          const [gradesResponse, coursesResponse] = await Promise.all([
+            moodleCall(base, token, "gradereport_overview_get_course_grades"),
+            moodleCall(base, token, "core_enrol_get_users_courses", {
+              userid: String(info.userid),
+              returnusercount: "0",
+            }),
+          ]);
+          if (!Array.isArray(gradesResponse.grades)) {
+            throw new Error("Ответ сервиса оценок не содержит списка grades.");
+          }
+          if (!Array.isArray(coursesResponse)) {
+            throw new Error(
+              "Moodle не вернул список курсов: проверьте права токена.",
+            );
+          }
+          const names = new Map(
+            coursesResponse.map((c) => [
+              Number(c.id),
+              c.fullname || c.shortname || `Курс ${c.id}`,
+            ]),
+          );
+          student.textContent =
+            [info.firstname, info.lastname].filter(Boolean).join(" ") ||
+            info.username ||
+            "Студент";
+          for (const item of gradesResponse.grades) {
+            cards.appendChild(
+              createCard(
+                item,
+                names.get(Number(item.courseid)) || `Курс №${item.courseid}`,
+                base,
+              ),
+            );
+          }
+          if (!gradesResponse.grades.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty";
+            empty.textContent = "Пока нет доступных итоговых оценок по курсам.";
+            cards.appendChild(empty);
+          }
+          results.hidden = false;
+          setStatus(
+            `Загружено курсов с оценками: ${gradesResponse.grades.length}.`,
+          );
+        } catch (error) {
+          const corsHint =
+            error instanceof TypeError
+              ? " Вероятно, браузер заблокировал запрос из-за CORS или проблемы сети. Для GitHub Pages сервер Moodle должен разрешать запросы с другого домена."
+              : "";
+          setStatus(
+            "Не удалось загрузить оценки: " + error.message + corsHint,
+            true,
+          );
+        } finally {
+          token = undefined;
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
